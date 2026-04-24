@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Events | Event Details</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html">Participants</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="notifications.html">Reminders</a></li>
+    <li><a href="create-event.html" class="nav-btn"><i class="fas fa-plus"></i> Create Event</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div id="eventBanner" style="height:280px;background:#1565C0 center/cover;position:relative;display:flex;align-items:flex-end">
+  <div style="background:linear-gradient(transparent,rgba(0,0,0,.75));width:100%;padding:2rem 5%">
+    <span id="evCat" class="event-category" style="position:static;display:inline-block;margin-bottom:.5rem"></span>
+    <h1 id="evTitle" style="color:#fff;font-family:Montserrat,sans-serif;font-size:2rem;font-weight:800"></h1>
+  </div>
+</div>
+
+<div class="container" style="max-width:960px">
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:2rem" id="mainGrid">
+
+    <!-- LEFT -->
+    <div>
+      <div style="background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:1.5rem">
+        <h2 style="color:#1565C0;font-size:1.2rem;margin-bottom:1rem"><i class="fas fa-info-circle" style="color:#FF6B2B"></i> About This Event</h2>
+        <p id="evDesc" style="color:#4b5563;line-height:1.8"></p>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem" id="evTags"></div>
+      </div>
+
+      <!-- Contact / Reminders -->
+      <div style="background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:1.5rem">
+        <h2 style="color:#1565C0;font-size:1.1rem;margin-bottom:1rem"><i class="fas fa-bell" style="color:#FF6B2B"></i> Contact & Reminders</h2>
+        <div id="evContact"></div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div style="background:#fff;border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,.08)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <h2 style="color:#1565C0;font-size:1.1rem"><i class="fas fa-star" style="color:#f59e0b"></i> Reviews & Feedback</h2>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('feedbackForm').scrollIntoView({behavior:'smooth'})">Write a Review</button>
+        </div>
+        <div id="avgRating" style="text-align:center;padding:1rem 0;border-bottom:1px solid #e5e7eb;margin-bottom:1.5rem"></div>
+        <div id="reviewsList"></div>
+        <!-- Feedback Form -->
+        <div id="feedbackForm" style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #e5e7eb">
+          <h3 style="color:#1565C0;margin-bottom:1rem">Share Your Experience</h3>
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="fbName" placeholder="Enter your name">
+          </div>
+          <div class="form-group">
+            <label>Rating</label>
+            <div class="stars" id="starPicker">
+              <i class="far fa-star" data-v="1"></i><i class="far fa-star" data-v="2"></i>
+              <i class="far fa-star" data-v="3"></i><i class="far fa-star" data-v="4"></i><i class="far fa-star" data-v="5"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Review Title</label>
+            <input type="text" id="fbTitle" placeholder="Summarise your experience">
+          </div>
+          <div class="form-group">
+            <label>Review</label>
+            <textarea id="fbText" rows="4" placeholder="Share your detailed feedback…"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="submitFeedback()"><i class="fas fa-paper-plane"></i> Submit Review</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div>
+      <div style="background:#fff;border-radius:14px;padding:1.5rem;box-shadow:0 4px 16px rgba(0,0,0,.08);margin-bottom:1.2rem;position:sticky;top:80px">
+        <div id="evMeta"></div>
+        <div id="evProgress" style="margin:1rem 0"></div>
+        <div id="evActions"></div>
+      </div>
+      <div style="background:#fff3ee;border-radius:14px;padding:1.2rem;border:2px solid #FF6B2B">
+        <h4 style="color:#FF6B2B;margin-bottom:.8rem"><i class="fas fa-share-alt"></i> Share this Event</h4>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap" id="shareArea"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem;margin-top:3rem">
+  &copy; 2026 SCSVMV University
+</footer>
+
+<div class="toast"></div>
+<script src="js/db.js"></script><script src="js/script.js"></script>
+<script>
+let currentEventId, selectedRating = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { location.href = 'events.html'; return; }
+  currentEventId = id;
+  const ev = DB.getById('events', 'id', id);
+  if (!ev) { location.href = 'events.html'; return; }
+
+  // Banner
+  document.getElementById('eventBanner').style.backgroundImage = `url('${ev.image_url}')`;
+  document.getElementById('evCat').textContent = ev.category;
+  document.getElementById('evTitle').textContent = ev.title;
+  document.title = `${ev.title} | SCSVMV Events`;
+
+  document.getElementById('evDesc').textContent = ev.description;
+  document.getElementById('evTags').innerHTML = (ev.tags||'').split(',').map(t=>`<span class="badge badge-orange">${t.trim()}</span>`).join('');
+
+  // Contact
+  document.getElementById('evContact').innerHTML = `
+    <div class="event-info"><i class="fas fa-envelope" style="color:#FF6B2B"></i><a href="mailto:${ev.contact_email}">${ev.contact_email}</a></div>
+    <div class="event-info"><i class="fas fa-phone" style="color:#FF6B2B"></i><a href="tel:+91${ev.contact_phone}">${ev.contact_phone}</a></div>
+    ${ev.whatsapp_link?`<div class="event-info"><i class="fab fa-whatsapp" style="color:#16a34a"></i><a href="${ev.whatsapp_link}" target="_blank">Join WhatsApp Group</a></div>`:''}
+    <a href="notifications.html" class="btn btn-outline btn-sm" style="margin-top:.5rem"><i class="fas fa-bell"></i> Set Reminder</a>`;
+
+  // Meta sidebar
+  const pct = seatsPercent(+ev.registered_count, +ev.max_participants);
+  document.getElementById('evMeta').innerHTML = `
+    <div class="event-info" style="margin-bottom:.6rem"><i class="fas fa-calendar" style="color:#FF6B2B"></i><strong>${fmtDate(ev.date)}</strong></div>
+    <div class="event-info" style="margin-bottom:.6rem"><i class="fas fa-clock" style="color:#FF6B2B"></i>${fmtTime(ev.time)}</div>
+    <div class="event-info" style="margin-bottom:.6rem"><i class="fas fa-map-marker-alt" style="color:#FF6B2B"></i>${ev.venue}</div>
+    <div class="event-info" style="margin-bottom:.6rem"><i class="fas fa-user" style="color:#FF6B2B"></i>${ev.organizer_name} <span class="badge badge-${ev.organizer_type==='faculty'?'blue':'orange'}" style="margin-left:.3rem">${ev.organizer_type}</span></div>`;
+
+  document.getElementById('evProgress').innerHTML = `
+    <div class="seats-bar"><div class="seats-fill" style="width:${pct}%"></div></div>
+    <div class="seats-text">${ev.registered_count}/${ev.max_participants} registered</div>`;
+
+  document.getElementById('evActions').innerHTML = ev.status === 'upcoming'
+    ? `<a href="register.html?event=${ev.id}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.8rem"><i class="fas fa-user-plus"></i> Register Now</a>`
+    : `<div class="badge badge-green" style="display:block;text-align:center;padding:.6rem;margin-top:.8rem;font-size:.95rem">✓ Event Completed</div>
+       <a href="participants.html?event=${ev.id}" class="btn btn-blue btn-sm" style="width:100%;justify-content:center;margin-top:.6rem"><i class="fas fa-users"></i> View Participants</a>`;
+
+  const url = encodeURIComponent(location.href);
+  const title = encodeURIComponent(ev.title);
+  document.getElementById('shareArea').innerHTML = `
+    <a href="https://wa.me/?text=${title}%20${url}" target="_blank" class="btn btn-sm" style="background:#25d366;color:#fff"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    <a href="mailto:?subject=${title}&body=${url}" class="btn btn-sm" style="background:#ea4335;color:#fff"><i class="fas fa-envelope"></i> Email</a>
+    <button onclick="navigator.clipboard.writeText(location.href);showToast('Link copied!','success')" class="btn btn-outline btn-sm"><i class="fas fa-copy"></i> Copy</button>`;
+
+  loadReviews();
+});
+
+function loadReviews() {
+  const reviews = DB.getWhere('feedback', {event_id: currentEventId});
+  const avg = reviews.length ? (reviews.reduce((s,f)=>s+Number(f.rating),0)/reviews.length).toFixed(1) : null;
+  document.getElementById('avgRating').innerHTML = reviews.length
+    ? `<div style="font-size:3rem;font-weight:800;color:#f59e0b">${avg}</div><div>${starHTML(Math.round(avg))}</div><div style="color:#6b7280;font-size:.9rem;margin-top:.3rem">${reviews.length} review${reviews.length>1?'s':''}</div>`
+    : `<p style="color:#6b7280">No reviews yet. Be the first!</p>`;
+  document.getElementById('reviewsList').innerHTML = reviews.map(f=>`
+    <div class="review-card">
+      <div class="review-header">
+        <div>
+          <span class="reviewer">${f.participant_name}</span>
+          <span class="badge badge-${f.user_type==='student'?'orange':'blue'}" style="margin-left:.4rem">${f.user_type}</span>
+        </div>
+        <div>${starHTML(Number(f.rating))}</div>
+      </div>
+      <div class="review-title">${f.title}</div>
+      <div class="review-text">${f.review}</div>
+      <div class="review-meta" style="margin-top:.6rem">${fmtDate(f.submission_date)}</div>
+    </div>`).join('');
+}
+
+// Star picker
+document.getElementById('starPicker').addEventListener('click', e => {
+  if (!e.target.dataset.v) return;
+  selectedRating = Number(e.target.dataset.v);
+  document.querySelectorAll('#starPicker i').forEach((el,i) => {
+    el.className = i < selectedRating ? 'fas fa-star' : 'far fa-star';
+    el.style.color = i < selectedRating ? '#f59e0b' : '#d1d5db';
+  });
+});
+
+function submitFeedback() {
+  const name = document.getElementById('fbName').value.trim();
+  const title = document.getElementById('fbTitle').value.trim();
+  const text = document.getElementById('fbText').value.trim();
+  if (!name || !selectedRating || !title || !text) { showToast('Please fill all fields and select a rating','error'); return; }
+  DB.insert('feedback', {
+    id: DB.generateId('FBK'), event_id: currentEventId, participant_name: name,
+    user_type: 'other', rating: String(selectedRating), title, review: text,
+    submission_date: new Date().toISOString().slice(0,10)
+  });
+  showToast('Review submitted! Thank you.','success');
+  document.getElementById('fbName').value=''; document.getElementById('fbTitle').value=''; document.getElementById('fbText').value='';
+  selectedRating=0; document.querySelectorAll('#starPicker i').forEach(el=>{el.className='far fa-star';el.style.color='#d1d5db'});
+  loadReviews();
+}
+</script>
+</body></html>

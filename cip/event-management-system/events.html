@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Events | Upcoming Events</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html" class="active">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html">Participants</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="notifications.html">Reminders</a></li>
+    <li><a href="create-event.html" class="nav-btn"><i class="fas fa-plus"></i> Create Event</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div class="page-banner">
+  <h1><i class="fas fa-calendar-alt"></i> Upcoming Events</h1>
+  <p>Browse and register for events hosted by students, faculty and the university</p>
+</div>
+
+<div class="container">
+  <div class="search-filter-bar">
+    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search events…"></div>
+    <div class="filter-chips" id="filterChips">
+      <span class="chip active" data-cat="All">All</span>
+      <span class="chip" data-cat="Conference">Conference</span>
+      <span class="chip" data-cat="Workshop">Workshop</span>
+      <span class="chip" data-cat="Seminar">Seminar</span>
+      <span class="chip" data-cat="Cultural">Cultural</span>
+      <span class="chip" data-cat="Sports">Sports</span>
+      <span class="chip" data-cat="Technical">Technical</span>
+    </div>
+    <a href="create-event.html" class="btn btn-primary" style="white-space:nowrap"><i class="fas fa-plus"></i> Create Event</a>
+  </div>
+
+  <div class="events-grid" id="eventsGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <i class="fas fa-calendar-times"></i>
+    <h3>No events found</h3>
+    <p style="color:#6b7280">Try changing your search or filter</p>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem">
+  &copy; 2026 SCSVMV University | <a href="admin/dashboard.html" style="color:var(--orange)">Admin</a>
+</footer>
+
+<script src="js/db.js"></script><script src="js/script.js"></script>
+<script>
+let allEvents = [], activeCat = 'All';
+document.addEventListener('DOMContentLoaded', () => {
+  allEvents = DB.getAll('events').filter(e => e.status === 'upcoming' && e.approved === 'true');
+
+  // pre-select category from URL
+  const urlCat = new URLSearchParams(location.search).get('cat');
+  if (urlCat) { activeCat = urlCat; document.querySelectorAll('.chip').forEach(c => { c.classList.toggle('active', c.dataset.cat === urlCat); }); }
+
+  render();
+
+  document.getElementById('searchInput').addEventListener('input', render);
+  document.getElementById('filterChips').addEventListener('click', e => {
+    if (!e.target.classList.contains('chip')) return;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+    activeCat = e.target.dataset.cat;
+    render();
+  });
+});
+
+function render() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let list = allEvents.filter(e => {
+    const matchCat = activeCat === 'All' || e.category === activeCat;
+    const matchQ = !q || e.title.toLowerCase().includes(q) || e.description.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+  const grid = document.getElementById('eventsGrid');
+  const empty = document.getElementById('emptyState');
+  grid.innerHTML = list.map(e => buildEventCard(e)).join('');
+  empty.style.display = list.length ? 'none' : 'block';
+}
+</script>
+</body></html>

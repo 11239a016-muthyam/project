@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Admin | Add Event</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/images/logo.png" alt="Logo" style="height:40px;margin-bottom:.5rem">
+      <h2>SCSVMV <span>Admin</span></h2>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="manage-events.html"><i class="fas fa-calendar-alt"></i> Manage Events</a></li>
+      <li><a href="add-event.html" class="active"><i class="fas fa-plus-circle"></i> Add Event</a></li>
+      <li><a href="../participants.html"><i class="fas fa-users"></i> Participants</a></li>
+      <li><a href="../feedback.html"><i class="fas fa-star"></i> Feedback</a></li>
+      <li><a href="../index.html"><i class="fas fa-home"></i> Back to Site</a></li>
+    </ul>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1><i class="fas fa-plus-circle" style="color:#FF6B2B"></i> Add New Event</h1>
+      <a href="manage-events.html" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+
+    <div class="form-card" style="max-width:100%">
+      <div class="form-row">
+        <div class="form-group"><label>Event Title *</label><input type="text" id="evTitle" placeholder="Full event title"></div>
+        <div class="form-group"><label>Category *</label>
+          <select id="evCat">
+            <option value="">Select…</option>
+            <option>Conference</option><option>Workshop</option><option>Seminar</option>
+            <option>Cultural</option><option>Sports</option><option>Technical</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Description *</label><textarea id="evDesc" rows="4" placeholder="Full description…"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Date *</label><input type="date" id="evDate"></div>
+        <div class="form-group"><label>Time *</label><input type="time" id="evTime"></div>
+      </div>
+      <div class="form-group"><label>Venue *</label><input type="text" id="evVenue" placeholder="Hall / Building / Location"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Organizer Name *</label><input type="text" id="orgName" placeholder="Organizer"></div>
+        <div class="form-group"><label>Organizer Type</label>
+          <select id="orgType"><option value="faculty">Faculty</option><option value="student">Student</option><option value="admin">Admin</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Max Participants</label><input type="number" id="evMax" placeholder="100" min="1"></div>
+        <div class="form-group"><label>Tags (comma separated)</label><input type="text" id="evTags" placeholder="AI, Tech, Research"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Contact Email</label><input type="email" id="orgEmail" placeholder="organizer@kanchiuniv.ac.in"></div>
+        <div class="form-group"><label>Contact Phone</label><input type="tel" id="orgPhone" placeholder="10-digit"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>WhatsApp Group Link</label><input type="url" id="orgWa" placeholder="https://chat.whatsapp.com/…"></div>
+        <div class="form-group"><label>Image URL</label><input type="url" id="evImg" placeholder="https://… (leave blank for default)" oninput="previewImg()"></div>
+      </div>
+      <div id="imgPreview" style="display:none;margin-bottom:1rem">
+        <img id="imgPrev" src="" alt="Preview" style="width:100%;height:200px;object-fit:cover;border-radius:12px">
+      </div>
+      <div style="display:flex;gap:1rem">
+        <button class="btn btn-primary" onclick="saveEvent(true)"><i class="fas fa-check"></i> Add & Publish</button>
+        <button class="btn btn-outline" onclick="saveEvent(false)"><i class="fas fa-save"></i> Save as Draft</button>
+        <a href="manage-events.html" class="btn btn-danger"><i class="fas fa-times"></i> Cancel</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast"></div>
+<script src="../js/db.js"></script><script src="../js/script.js"></script>
+<script>
+function previewImg(){
+  const url=document.getElementById('evImg').value.trim();
+  const preview=document.getElementById('imgPreview');
+  if(url){preview.style.display='block';document.getElementById('imgPrev').src=url;}else preview.style.display='none';
+}
+
+function saveEvent(publish){
+  const title=document.getElementById('evTitle').value.trim();
+  const cat=document.getElementById('evCat').value;
+  const desc=document.getElementById('evDesc').value.trim();
+  const date=document.getElementById('evDate').value;
+  const time=document.getElementById('evTime').value;
+  const venue=document.getElementById('evVenue').value.trim();
+  const orgName=document.getElementById('orgName').value.trim();
+  if(!title||!cat||!desc||!date||!time||!venue||!orgName){showToast('Fill all required fields','error');return;}
+  DB.insert('events',{
+    id:DB.generateId('EVT'),title,description:desc,category:cat,date,time,venue,
+    organizer_name:orgName,
+    organizer_type:document.getElementById('orgType').value,
+    organizer_id:DB.generateId('UID'),
+    status:'upcoming',
+    max_participants:document.getElementById('evMax').value||'100',
+    registered_count:'0',
+    image_url:document.getElementById('evImg').value.trim()||'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    tags:document.getElementById('evTags').value,
+    contact_email:document.getElementById('orgEmail').value,
+    contact_phone:document.getElementById('orgPhone').value,
+    whatsapp_link:document.getElementById('orgWa').value,
+    created_date:new Date().toISOString().slice(0,10),
+    approved:publish?'true':'false'
+  });
+  showToast(`Event ${publish?'published':'saved as draft'}!`,'success');
+  setTimeout(()=>location.href='manage-events.html',1200);
+}
+</script>
+</body></html>

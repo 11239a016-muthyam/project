@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Events | Feedback & Reviews</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html">Participants</a></li>
+    <li><a href="feedback.html" class="active">Feedback</a></li>
+    <li><a href="notifications.html">Reminders</a></li>
+    <li><a href="create-event.html" class="nav-btn"><i class="fas fa-plus"></i> Create Event</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div class="page-banner" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">
+  <h1><i class="fas fa-star"></i> Feedback & Reviews</h1>
+  <p>Read what participants say and share your own experience</p>
+</div>
+
+<div class="container">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem" class="stats-row" id="fbStats"></div>
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:2rem">
+    <!-- Reviews list -->
+    <div>
+      <div class="search-filter-bar" style="margin-bottom:1.5rem">
+        <select id="evFilter" style="padding:.6rem 1rem;border:2px solid #e5e7eb;border-radius:10px;font-family:Poppins,sans-serif;flex:1">
+          <option value="">All Events</option>
+        </select>
+        <div class="filter-chips">
+          <span class="chip active" data-r="0">All Ratings</span>
+          <span class="chip" data-r="5">⭐⭐⭐⭐⭐</span>
+          <span class="chip" data-r="4">⭐⭐⭐⭐</span>
+          <span class="chip" data-r="3">⭐⭐⭐</span>
+        </div>
+      </div>
+      <div id="reviewsContainer"></div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <i class="fas fa-comment-slash"></i><h3>No reviews yet</h3>
+      </div>
+    </div>
+
+    <!-- Submit form -->
+    <div>
+      <div class="form-card" style="position:sticky;top:80px">
+        <h3 style="color:#1565C0;margin-bottom:1.2rem"><i class="fas fa-pen" style="color:#FF6B2B"></i> Write a Review</h3>
+        <div class="form-group">
+          <label>Select Event</label>
+          <select id="fbEvent" style="width:100%;padding:.7rem;border:2px solid #e5e7eb;border-radius:10px;font-family:Poppins,sans-serif"><option value="">-- Select Event --</option></select>
+        </div>
+        <div class="form-group"><label>Your Name</label><input type="text" id="fbName" placeholder="Full name"></div>
+        <div class="form-group"><label>You are a…</label>
+          <select id="fbType" style="width:100%;padding:.7rem;border:2px solid #e5e7eb;border-radius:10px;font-family:Poppins,sans-serif">
+            <option value="student">Student</option><option value="faculty">Faculty</option><option value="other">Guest</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Rating</label>
+          <div class="stars" id="starPicker">
+            <i class="far fa-star" data-v="1"></i><i class="far fa-star" data-v="2"></i>
+            <i class="far fa-star" data-v="3"></i><i class="far fa-star" data-v="4"></i><i class="far fa-star" data-v="5"></i>
+          </div>
+        </div>
+        <div class="form-group"><label>Title</label><input type="text" id="fbTitle" placeholder="One-line summary"></div>
+        <div class="form-group"><label>Review</label><textarea id="fbText" rows="4" placeholder="Your detailed feedback…"></textarea></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem;margin-top:3rem">
+  &copy; 2026 SCSVMV University
+</footer>
+<div class="toast"></div>
+<script src="js/db.js"></script><script src="js/script.js"></script>
+<script>
+let allFeedback=[], evMap={}, activeEv='', activeRating=0, selectedRating=0;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  DB.getAll('events').forEach(e=>evMap[e.id]=e.title);
+  allFeedback=DB.getAll('feedback');
+
+  // Populate dropdowns
+  [document.getElementById('evFilter'), document.getElementById('fbEvent')].forEach(sel=>{
+    Object.entries(evMap).forEach(([id,title])=>{
+      const o=document.createElement('option'); o.value=id; o.textContent=title.slice(0,50); sel.appendChild(o);
+    });
+  });
+
+  renderStats(); render();
+
+  document.getElementById('evFilter').addEventListener('change',e=>{activeEv=e.target.value;render();});
+  document.getElementById('filterChips').addEventListener('click',e=>{
+    if(!e.target.dataset.r&&e.target.dataset.r!=='0')return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active'); activeRating=Number(e.target.dataset.r); render();
+  });
+});
+
+function renderStats(){
+  const avg=allFeedback.length?(allFeedback.reduce((s,f)=>s+Number(f.rating),0)/allFeedback.length).toFixed(1):'N/A';
+  document.getElementById('fbStats').innerHTML=`
+    <div class="stat-card"><div class="num">${allFeedback.length}</div><div class="lbl">Total Reviews</div></div>
+    <div class="stat-card blue"><div class="num">${avg}</div><div class="lbl">Avg Rating</div></div>`;
+}
+
+function render(){
+  let list=allFeedback.filter(f=>(!activeEv||f.event_id===activeEv)&&(!activeRating||Number(f.rating)===activeRating));
+  const container=document.getElementById('reviewsContainer');
+  const empty=document.getElementById('emptyState');
+  if(!list.length){container.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  container.innerHTML=list.map(f=>`
+    <div class="review-card">
+      <div class="review-header">
+        <div>
+          <span class="reviewer">${f.participant_name}</span>
+          <span class="badge badge-${f.user_type==='student'?'orange':'blue'}" style="margin-left:.4rem">${f.user_type}</span>
+        </div>
+        <div>${starHTML(Number(f.rating))}</div>
+      </div>
+      <div style="font-size:.8rem;color:#6b7280;margin-bottom:.4rem">${evMap[f.event_id]||''}</div>
+      <div class="review-title">${f.title}</div>
+      <div class="review-text">${f.review}</div>
+      <div class="review-meta" style="margin-top:.6rem">${fmtDate(f.submission_date)}</div>
+    </div>`).join('');
+}
+
+document.getElementById('starPicker').addEventListener('click',e=>{
+  if(!e.target.dataset.v)return;
+  selectedRating=Number(e.target.dataset.v);
+  document.querySelectorAll('#starPicker i').forEach((el,i)=>{
+    el.className=i<selectedRating?'fas fa-star':'far fa-star';
+    el.style.color=i<selectedRating?'#f59e0b':'#d1d5db';
+  });
+});
+
+function submitReview(){
+  const evId=document.getElementById('fbEvent').value;
+  const name=document.getElementById('fbName').value.trim();
+  const title=document.getElementById('fbTitle').value.trim();
+  const text=document.getElementById('fbText').value.trim();
+  if(!evId||!name||!selectedRating||!title||!text){showToast('Please fill all fields','error');return;}
+  const r=DB.insert('feedback',{
+    id:DB.generateId('FBK'),event_id:evId,participant_name:name,
+    user_type:document.getElementById('fbType').value,rating:String(selectedRating),
+    title,review:text,submission_date:new Date().toISOString().slice(0,10)
+  });
+  allFeedback=DB.getAll('feedback');
+  renderStats(); render();
+  showToast('Review submitted!','success');
+  document.getElementById('fbName').value=''; document.getElementById('fbTitle').value='';
+  document.getElementById('fbText').value=''; selectedRating=0;
+  document.querySelectorAll('#starPicker i').forEach(el=>{el.className='far fa-star';el.style.color='#d1d5db';});
+}
+</script>
+</body></html>
