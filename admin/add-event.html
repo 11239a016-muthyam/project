@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Admin | Add Event</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/images/logo.png" alt="Logo">
+      <h2>SCSVMV <span>Admin</span></h2>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="manage-events.html"><i class="fas fa-calendar-alt"></i> Manage Events</a></li>
+      <li><a href="add-event.html" class="active"><i class="fas fa-plus-circle"></i> Add Event</a></li>
+      <li><a href="../participants.html"><i class="fas fa-users"></i> Participants</a></li>
+      <li><a href="../feedback.html"><i class="fas fa-star"></i> Feedback</a></li>
+      <li style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem"><a href="../index.html"><i class="fas fa-home"></i> Back to Site</a></li>
+      <li><a href="#" onclick="Auth.logout();window.location.href='../auth.html'" style="color:#ff8a8a"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1><i class="fas fa-plus-circle"></i> Create New Event</h1>
+      <a href="manage-events.html" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to Events</a>
+    </div>
+
+    <div class="form-card" style="max-width:800px;margin:0 auto;border:1px solid var(--border)">
+      
+      <div style="border-bottom:2px solid var(--border);padding-bottom:1rem;margin-bottom:2rem">
+        <h2 style="color:var(--blue);font-weight:700;font-size:1.3rem">Event Details</h2>
+        <p style="color:var(--text-light);font-size:.9rem">Fill in the primary information for the upcoming event.</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Event Title <span style="color:#dc2626">*</span></label>
+          <input type="text" id="evTitle" placeholder="e.g. National Level Tech Symposium">
+        </div>
+        <div class="form-group">
+          <label>Category <span style="color:#dc2626">*</span></label>
+          <select id="evCat">
+            <option value="">Select Category…</option>
+            <option>Conference</option><option>Workshop</option><option>Seminar</option>
+            <option>Cultural</option><option>Sports</option><option>Technical</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Full Description <span style="color:#dc2626">*</span></label>
+        <textarea id="evDesc" rows="5" placeholder="Provide comprehensive details about the event…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date <span style="color:#dc2626">*</span></label><input type="date" id="evDate"></div>
+        <div class="form-group"><label>Time <span style="color:#dc2626">*</span></label><input type="time" id="evTime"></div>
+      </div>
+      <div class="form-group"><label>Venue / Location <span style="color:#dc2626">*</span></label><input type="text" id="evVenue" placeholder="e.g. Sri Jayendra Saraswathi Diamond Jubilee Hall"></div>
+      
+      <div style="border-bottom:2px solid var(--border);padding-bottom:1rem;margin-bottom:2rem;margin-top:3rem">
+        <h2 style="color:var(--blue);font-weight:700;font-size:1.3rem">Organizer & Contact</h2>
+        <p style="color:var(--text-light);font-size:.9rem">Information on who is hosting and how to reach them.</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Organizer Name <span style="color:#dc2626">*</span></label><input type="text" id="orgName" placeholder="e.g. Dept of Computer Science"></div>
+        <div class="form-group"><label>Organizer Type</label>
+          <select id="orgType"><option value="faculty">Faculty</option><option value="student">Student / Club</option><option value="admin">University Admin</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Contact Email</label><input type="email" id="orgEmail" placeholder="organizer@kanchiuniv.ac.in"></div>
+        <div class="form-group"><label>Contact Phone</label><input type="tel" id="orgPhone" placeholder="+91 98765 43210"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>WhatsApp Group Link</label><input type="url" id="orgWa" placeholder="https://chat.whatsapp.com/…"></div>
+        <div class="form-group"><label>Max Participants</label><input type="number" id="evMax" placeholder="e.g. 150" min="1"></div>
+      </div>
+
+      <div style="border-bottom:2px solid var(--border);padding-bottom:1rem;margin-bottom:2rem;margin-top:3rem">
+        <h2 style="color:var(--blue);font-weight:700;font-size:1.3rem">Media & Tags</h2>
+        <p style="color:var(--text-light);font-size:.9rem">Enhance the event visibility with an image and keywords.</p>
+      </div>
+
+      <div class="form-group"><label>Tags (comma separated)</label><input type="text" id="evTags" placeholder="e.g. AI, Machine Learning, Coding"></div>
+      <div class="form-group">
+        <label>Banner Image (Upload)</label>
+        <input type="file" id="evImgFile" accept="image/*" style="width:100%;padding:.7rem;border:2px solid #e5e7eb;border-radius:10px;font-family:inherit" onchange="handleImageUpload(event)">
+        <input type="hidden" id="evImgB64">
+        <p class="form-note">Upload a high-resolution poster for the event banner (under 2MB).</p>
+      </div>
+      <div id="imgPreview" style="display:none;margin-bottom:2rem;border-radius:12px;overflow:hidden;border:2px dashed var(--border);padding:4px">
+        <img id="imgPrev" src="" alt="Banner Preview" style="width:100%;height:240px;object-fit:cover;border-radius:8px;display:block">
+        <div style="text-align:center;padding:.5rem"><button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('evImgFile').value='';document.getElementById('evImgB64').value='';document.getElementById('imgPreview').style.display='none'">Remove Image</button></div>
+      </div>
+
+      <div style="display:flex;gap:1.2rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)">
+        <button class="btn btn-primary" onclick="saveEvent(true)" style="flex:1;justify-content:center;font-size:1.05rem;padding:.8rem"><i class="fas fa-paper-plane"></i> Publish Event</button>
+        <button class="btn btn-outline" onclick="saveEvent(false)" style="flex:1;justify-content:center;font-size:1.05rem;padding:.8rem"><i class="fas fa-save"></i> Save as Draft</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast"></div>
+<script src="../js/db.js"></script><script src="../js/auth.js"></script><script src="../js/script.js"></script>
+<script>
+DB.init(); 
+if (typeof Auth !== 'undefined') Auth.init().then(() => { Auth.requireAdmin(); });
+
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('Image must be under 2MB.', 'error'); e.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const b64 = event.target.result;
+    document.getElementById('evImgB64').value = b64;
+    document.getElementById('imgPrev').src = b64;
+    document.getElementById('imgPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveEvent(publish){
+  const title=document.getElementById('evTitle').value.trim();
+  const cat=document.getElementById('evCat').value;
+  const desc=document.getElementById('evDesc').value.trim();
+  const date=document.getElementById('evDate').value;
+  const time=document.getElementById('evTime').value;
+  const venue=document.getElementById('evVenue').value.trim();
+  const orgName=document.getElementById('orgName').value.trim();
+  
+  if(!title||!cat||!desc||!date||!time||!venue||!orgName){
+    showToast('Please fill all required fields marked with *','error');
+    return;
+  }
+  
+  DB.insert('events',{
+    id:DB.generateId('EVT'),title,description:desc,category:cat,date,time,venue,
+    organizer_name:orgName,
+    organizer_type:document.getElementById('orgType').value,
+    organizer_id:DB.generateId('UID'),
+    status:'upcoming',
+    max_participants:document.getElementById('evMax').value||'100',
+    registered_count:'0',
+    image_url:document.getElementById('evImgB64').value || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    tags:document.getElementById('evTags').value,
+    contact_email:document.getElementById('orgEmail').value,
+    contact_phone:document.getElementById('orgPhone').value,
+    whatsapp_link:document.getElementById('orgWa').value,
+    created_date:new Date().toISOString().slice(0,10),
+    approved:publish?'true':'false'
+  });
+  
+  showToast(`Event successfully ${publish?'published':'saved as draft'}!`,'success');
+  setTimeout(()=>location.href='manage-events.html',1500);
+}
+</script>
+</body></html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Events | Create Event</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html">Participants</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="notifications.html">Reminders</a></li>
+    <li><a href="create-event.html" class="nav-btn active"><i class="fas fa-plus"></i> Create Event</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div class="page-banner" style="background:linear-gradient(135deg,#FF6B2B,#e85a1a)">
+  <h1><i class="fas fa-calendar-plus"></i> Create a New Event</h1>
+  <p>Students and Faculty can propose events – pending admin approval</p>
+</div>
+
+<div class="container" style="max-width:800px">
+  <div class="alert alert-warning"><i class="fas fa-info-circle"></i> Events submitted here will be reviewed by the admin team before being published.</div>
+
+  <div class="form-card">
+    <!-- Organizer section -->
+    <h3 style="color:#1565C0;margin-bottom:1rem;border-bottom:2px solid #e5e7eb;padding-bottom:.6rem">Organizer Information</h3>
+    <div class="type-selector" style="grid-template-columns:1fr 1fr;margin-bottom:1.2rem">
+      <div class="type-card" id="oc-student" onclick="setOrgType('student')">
+        <i class="fas fa-graduation-cap"></i><h3>Student</h3>
+      </div>
+      <div class="type-card" id="oc-faculty" onclick="setOrgType('faculty')">
+        <i class="fas fa-chalkboard-teacher"></i><h3>Faculty</h3>
+      </div>
+    </div>
+
+    <div id="orgStudentLookup" style="display:none">
+      <div class="form-group" style="display:flex;gap:.8rem;align-items:flex-end">
+        <div style="flex:1"><label>Register Number</label><input type="text" id="orgRegNum" placeholder="e.g. SCS2022001" style="width:100%;padding:.7rem;border:2px solid #e5e7eb;border-radius:10px"></div>
+        <button class="btn btn-primary" onclick="orgLookupStudent()"><i class="fas fa-search"></i> Find</button>
+      </div>
+    </div>
+    <div id="orgFacultyLookup" style="display:none">
+      <div class="form-group" style="display:flex;gap:.8rem;align-items:flex-end">
+        <div style="flex:1"><label>Faculty ID</label><input type="text" id="orgFacId" placeholder="e.g. FAC001" style="width:100%;padding:.7rem;border:2px solid #e5e7eb;border-radius:10px"></div>
+        <button class="btn btn-primary" onclick="orgLookupFaculty()"><i class="fas fa-search"></i> Find</button>
+      </div>
+    </div>
+    <div id="orgInfo" style="display:none;background:#dcfce7;border-radius:10px;padding:1rem;margin-bottom:1rem;border:1px solid #16a34a"></div>
+
+    <div class="form-row">
+      <div class="form-group"><label>Organizer Name *</label><input type="text" id="orgName" placeholder="Name"></div>
+      <div class="form-group"><label>Contact Email *</label><input type="email" id="orgEmail" placeholder="email@kanchiuniv.ac.in"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Contact Phone *</label><input type="tel" id="orgPhone" placeholder="10-digit number"></div>
+      <div class="form-group"><label>WhatsApp Group Link</label><input type="url" id="orgWhatsapp" placeholder="https://chat.whatsapp.com/..."></div>
+    </div>
+
+    <!-- Event details -->
+    <h3 style="color:#1565C0;margin:1.5rem 0 1rem;border-bottom:2px solid #e5e7eb;padding-bottom:.6rem">Event Details</h3>
+    <div class="form-group"><label>Event Title *</label><input type="text" id="evTitle" placeholder="Full title of the event"></div>
+    <div class="form-group"><label>Description *</label><textarea id="evDesc" rows="4" placeholder="Describe the event, agenda, target audience…"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category *</label>
+        <select id="evCat">
+          <option value="">Select…</option>
+          <option>Conference</option><option>Workshop</option><option>Seminar</option>
+          <option>Cultural</option><option>Sports</option><option>Technical</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Tags (comma separated)</label><input type="text" id="evTags" placeholder="AI, Research, Tech"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date *</label><input type="date" id="evDate"></div>
+      <div class="form-group"><label>Time *</label><input type="time" id="evTime"></div>
+    </div>
+    <div class="form-group"><label>Venue *</label><input type="text" id="evVenue" placeholder="Building, Room / Location on campus"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Max Participants</label><input type="number" id="evMax" placeholder="e.g. 100" min="1"></div>
+      <div class="form-group"><label>Event Poster (Upload Image)</label>
+        <input type="file" id="evImgFile" accept="image/*" style="width:100%;padding:.5rem;border:2px solid var(--border);border-radius:10px;font-family:inherit" onchange="handleImageUpload(event)">
+        <input type="hidden" id="evImgB64">
+      </div>
+    </div>
+    <div id="imgPreview" style="display:none;margin-bottom:1rem">
+      <img id="imgPrev" src="" alt="Preview" style="width:100%;max-height:300px;object-fit:cover;border-radius:10px;border:1px solid var(--border)">
+      <button class="btn btn-outline btn-sm" style="margin-top:.5rem" onclick="document.getElementById('evImgFile').value='';document.getElementById('evImgB64').value='';document.getElementById('imgPreview').style.display='none'">Remove Image</button>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.5rem" onclick="submitEvent()">
+      <i class="fas fa-paper-plane"></i> Submit for Approval
+    </button>
+  </div>
+</div>
+
+<div id="successModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:3rem;max-width:440px;text-align:center;margin:1rem">
+    <div style="font-size:3rem;color:#16a34a;margin-bottom:1rem"><i class="fas fa-check-circle"></i></div>
+    <h2 style="color:#16a34a;margin-bottom:.5rem">Event Submitted!</h2>
+    <p style="color:#6b7280;margin-bottom:2rem">Your event has been submitted for admin approval. It will appear on the site once approved.</p>
+    <div style="display:flex;gap:1rem;justify-content:center">
+      <a href="events.html" class="btn btn-outline">View Events</a>
+      <a href="index.html" class="btn btn-primary">Home</a>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem;margin-top:3rem">
+  &copy; 2026 SCSVMV University
+</footer>
+<div class="toast"></div>
+<script src="js/db.js"></script><script src="js/auth.js"></script><script src="js/script.js"></script>
+<script>
+// Auth guard — must be logged in to create events
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof Auth !== 'undefined') Auth.requireAuth();
+});
+let orgType='', orgId='';
+function setOrgType(t){
+  orgType=t;
+  ['student','faculty'].forEach(x=>document.getElementById(`oc-${x}`).classList.remove('selected'));
+  document.getElementById(`oc-${t}`).classList.add('selected');
+  document.getElementById('orgStudentLookup').style.display=t==='student'?'block':'none';
+  document.getElementById('orgFacultyLookup').style.display=t==='faculty'?'block':'none';
+}
+function orgLookupStudent(){
+  const rn=document.getElementById('orgRegNum').value.trim().toUpperCase();
+  const s=DB.getById('students','reg_number',rn);
+  if(!s){showToast('Not found','error');return;}
+  orgId=rn; fill(s.name,s.email,s.phone,s.whatsapp);
+  document.getElementById('orgInfo').style.display='block';
+  document.getElementById('orgInfo').innerHTML=`<i class="fas fa-check-circle" style="color:#16a34a"></i> <strong>${s.name}</strong> | ${s.department} Yr${s.year}`;
+}
+function orgLookupFaculty(){
+  const fid=document.getElementById('orgFacId').value.trim().toUpperCase();
+  const f=DB.getById('faculty','faculty_id',fid);
+  if(!f){showToast('Not found','error');return;}
+  orgId=fid; fill(f.name,f.email,f.phone,f.whatsapp);
+  document.getElementById('orgInfo').style.display='block';
+  document.getElementById('orgInfo').innerHTML=`<i class="fas fa-check-circle" style="color:#16a34a"></i> <strong>${f.name}</strong> | ${f.designation}, ${f.department}`;
+}
+function fill(name,email,phone,wa){
+  document.getElementById('orgName').value=name;
+  document.getElementById('orgEmail').value=email;
+  document.getElementById('orgPhone').value=phone;
+  document.getElementById('orgWhatsapp').value='';
+  showToast('Auto-filled!','success');
+}
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (file.size > 2 * 1024 * 1024) { // 2MB limit
+    showToast('Image is too large. Please select an image under 2MB.', 'error');
+    e.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const b64 = event.target.result;
+    document.getElementById('evImgB64').value = b64;
+    document.getElementById('imgPrev').src = b64;
+    document.getElementById('imgPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function submitEvent(){
+  const title=document.getElementById('evTitle').value.trim();
+  const desc=document.getElementById('evDesc').value.trim();
+  const cat=document.getElementById('evCat').value;
+  const date=document.getElementById('evDate').value;
+  const time=document.getElementById('evTime').value;
+  const venue=document.getElementById('evVenue').value.trim();
+  const name=document.getElementById('orgName').value.trim();
+  const email=document.getElementById('orgEmail').value.trim();
+  const phone=document.getElementById('orgPhone').value.trim();
+  if(!title||!desc||!cat||!date||!time||!venue||!name||!email||!phone||!orgType){
+    showToast('Please fill all required fields','error');return;
+  }
+  DB.insert('events',{
+    id:DB.generateId('EVT'),title,description:desc,category:cat,date,time,venue,
+    organizer_name:name,organizer_type:orgType,organizer_id:orgId||DB.generateId('UID'),
+    status:'upcoming',max_participants:document.getElementById('evMax').value||'100',
+    registered_count:'0',
+    image_url:document.getElementById('evImgB64').value || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+    tags:document.getElementById('evTags').value,contact_email:email,contact_phone:phone,
+    whatsapp_link:document.getElementById('orgWhatsapp').value,
+    created_date:new Date().toISOString().slice(0,10),approved:'false'
+  });
+  document.getElementById('successModal').style.display='flex';
+}
+</script>
+</body></html>

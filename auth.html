@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Sign In | SCSVMV Events</title>
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .auth-tabs{display:flex;gap:.4rem;margin-bottom:2rem;border-bottom:2px solid var(--border);padding-bottom:.5rem;overflow-x:auto}
+    .auth-tab{padding:.5rem 1.2rem;border:none;background:transparent;font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-11px;white-space:nowrap;transition:.2s;font-family:inherit;font-size:.95rem}
+    .auth-tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+    .auth-panel{display:none}.auth-panel.active{display:block}
+    .demo-hint{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:.8rem 1rem;font-size:.85rem;margin-top:1rem;line-height:1.6}
+    .demo-hint strong{color:#b45309}
+    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:500px){.form-row-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="auth-page">
+
+<div class="auth-wrap">
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="auth-left-content">
+      <div class="auth-logo">
+        <img src="assets/images/logo.png" alt="SCSVMV Logo">
+        <div class="auth-logo-text">
+          <h1>SCSVMV <span>Events</span></h1>
+          <p>Sri Chandrasekharendra Saraswathi Viswa Mahavidyalaya</p>
+        </div>
+      </div>
+      <div class="auth-headline">Welcome to<br><span>Campus Events</span></div>
+      <p class="auth-tagline">Discover, register and manage conferences, workshops, seminars and cultural fests — all in one place.</p>
+      <div class="auth-features">
+        <div class="auth-feat"><div class="auth-feat-icon"><i class="fas fa-calendar-check"></i></div><div class="auth-feat-text"><strong>Create Events</strong><span>Host workshops &amp; seminars</span></div></div>
+        <div class="auth-feat"><div class="auth-feat-icon"><i class="fas fa-ticket-alt"></i></div><div class="auth-feat-text"><strong>Easy Registration</strong><span>One-click event sign-up</span></div></div>
+        <div class="auth-feat"><div class="auth-feat-icon"><i class="fas fa-shield-alt"></i></div><div class="auth-feat-text"><strong>Secure &amp; Verified</strong><span>OTP-based authentication</span></div></div>
+      </div>
+      <div class="demo-hint" style="margin-top:2rem">
+        <strong>🔑 Admin Access:</strong><br>
+        Email: <strong>admin@kanchiuniv.ac.in</strong><br>
+        Password: <strong>Admin@123</strong><br><br>
+        <strong>📱 OTP Login:</strong> Demo OTP is always <strong>123456</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-card">
+      <!-- TABS -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        <button class="auth-tab" id="tab-otp" onclick="switchTab('otp')"><i class="fas fa-mobile-alt"></i> OTP Login</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')"><i class="fas fa-user-plus"></i> Register</button>
+      </div>
+
+      <!-- ── SIGN IN (PASSWORD) ── -->
+      <div class="auth-panel active" id="panel-signin">
+        <div class="auth-card-title">Welcome back 👋</div>
+        <div class="auth-card-sub">Sign in with your email and password</div>
+        <form id="signinForm" onsubmit="handleSignin(event)">
+          <div class="form-group">
+            <label for="si-email">Email / Registration ID</label>
+            <div class="input-wrap"><i class="fas fa-envelope fi"></i>
+              <input type="text" id="si-email" placeholder="email or reg number" required autocomplete="username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="si-pwd">Password</label>
+            <div class="input-wrap"><i class="fas fa-lock fi"></i>
+              <input type="password" id="si-pwd" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="pwd-toggle" onclick="togglePwd('si-pwd',this)"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="form-extras">
+            <label class="remember-label"><input type="checkbox" id="rememberMe"> Remember me</label>
+            <a href="#" class="forgot-link" onclick="switchTab('forgot');return false">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn-auth" id="signinBtn">
+            <div class="spinner"></div>
+            <span class="btn-label"><i class="fas fa-sign-in-alt"></i> Sign In</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── OTP LOGIN ── -->
+      <div class="auth-panel" id="panel-otp">
+        <div class="auth-card-title">Passwordless Login 📩</div>
+        <div class="auth-card-sub">Enter your email — we'll send you a one-time code</div>
+        <form id="otpLoginForm" onsubmit="handleOtpLogin(event)">
+          <div class="form-group">
+            <label for="ot-email">Email Address</label>
+            <div class="input-wrap"><i class="fas fa-envelope fi"></i>
+              <input type="email" id="ot-email" placeholder="you@kanchiuniv.ac.in" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-auth" id="otpLoginBtn">
+            <div class="spinner"></div>
+            <span class="btn-label"><i class="fas fa-paper-plane"></i> Send OTP Code</span>
+          </button>
+        </form>
+        <div class="demo-hint" style="margin-top:1.2rem">
+          <strong>DEMO MODE:</strong> OTP is always <strong style="font-size:1.1rem;letter-spacing:2px">123456</strong> — no email needed!
+        </div>
+      </div>
+
+      <!-- ── REGISTER ── -->
+      <div class="auth-panel" id="panel-signup">
+        <div class="auth-card-title">Create Account ✨</div>
+        <div class="auth-card-sub">Join SCSVMV Events with your details</div>
+        <form id="signupForm" onsubmit="handleSignup(event)">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="su-name">Full Name *</label>
+              <div class="input-wrap"><i class="fas fa-user fi"></i>
+                <input type="text" id="su-name" placeholder="Your full name" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="su-type">I am a... *</label>
+              <div class="input-wrap"><i class="fas fa-id-badge fi"></i>
+                <select id="su-type" required style="width:100%;padding:.9rem 1rem .9rem 3rem;border:2px solid var(--border);border-radius:12px;font-family:inherit;background:var(--bg-light);font-size:.95rem;color:var(--text);appearance:none;outline:none;cursor:pointer">
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty / Staff</option>
+                  <option value="guest">Guest / Visitor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="su-email">Email Address *</label>
+            <div class="input-wrap"><i class="fas fa-envelope fi"></i>
+              <input type="email" id="su-email" placeholder="you@kanchiuniv.ac.in" required>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="su-reg">Registration / Employee ID</label>
+              <div class="input-wrap"><i class="fas fa-id-card fi"></i>
+                <input type="text" id="su-reg" placeholder="e.g. SCS2022001">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="su-phone">Phone Number</label>
+              <div class="input-wrap"><i class="fas fa-phone fi"></i>
+                <input type="tel" id="su-phone" placeholder="+91 9876543210">
+              </div>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="su-dob">Date of Birth *</label>
+              <div class="input-wrap"><i class="fas fa-birthday-cake fi"></i>
+                <input type="date" id="su-dob" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="su-dept">Department</label>
+              <div class="input-wrap"><i class="fas fa-building fi"></i>
+                <input type="text" id="su-dept" placeholder="e.g. Computer Science">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="su-pwd">Password *</label>
+            <div class="input-wrap"><i class="fas fa-lock fi"></i>
+              <input type="password" id="su-pwd" placeholder="Min 6 characters" required oninput="updateStrength(this.value)">
+              <button type="button" class="pwd-toggle" onclick="togglePwd('su-pwd',this)"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="pwd-strength">
+              <div class="pwd-bar"><div class="pwd-fill" id="pwdFill"></div></div>
+              <div class="pwd-label" id="pwdLabel"></div>
+            </div>
+          </div>
+          <button type="submit" class="btn-auth" id="signupBtn">
+            <div class="spinner"></div>
+            <span class="btn-label"><i class="fas fa-user-plus"></i> Create Account &amp; Verify</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── FORGOT PASSWORD ── -->
+      <div class="auth-panel" id="panel-forgot">
+        <div class="auth-card-title">Reset Password 🔑</div>
+        <div class="auth-card-sub">Enter your email — we'll send a reset OTP</div>
+        <form id="forgotForm" onsubmit="handleForgot(event)">
+          <div class="form-group">
+            <label for="fg-email">Email Address</label>
+            <div class="input-wrap"><i class="fas fa-envelope fi"></i>
+              <input type="email" id="fg-email" placeholder="your registered email" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-auth" id="forgotBtn">
+            <div class="spinner"></div>
+            <span class="btn-label"><i class="fas fa-paper-plane"></i> Send Recovery OTP</span>
+          </button>
+        </form>
+        <div class="auth-switch"><a href="#" onclick="switchTab('signin');return false">← Back to Sign In</a></div>
+        <div class="demo-hint" style="margin-top:1rem">
+          <strong>Tip:</strong> Default password for pre-registered students is their <strong>date of birth</strong> in <strong>DDMMYYYY</strong> format.<br>
+          e.g. born on 01/05/2003 → password is <strong>01052003</strong>
+        </div>
+      </div>
+
+    </div><!-- /auth-card -->
+  </div><!-- /auth-right -->
+</div><!-- /auth-wrap -->
+
+<!-- OTP MODAL -->
+<div class="modal-overlay" id="otpModal">
+  <div class="modal-box">
+    <div class="modal-icon"><i class="fas fa-envelope-open-text"></i></div>
+    <div class="modal-title">Check Your Email</div>
+    <div class="modal-sub">We sent a 6-digit OTP to<br><strong id="otpEmailDisplay"></strong></div>
+    <div id="demoOtpBanner" style="background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:.6rem 1rem;margin:.8rem 0;font-size:.9rem;display:none">
+      Demo OTP: <strong id="demoOtpCode" style="font-size:1.2rem;letter-spacing:3px;color:#b45309"></strong>
+    </div>
+    <div class="otp-inputs">
+      <input type="number" maxlength="1" id="o1" oninput="otpMove(this,'o2')" onkeydown="otpBack(event,this,'')">
+      <input type="number" maxlength="1" id="o2" oninput="otpMove(this,'o3')" onkeydown="otpBack(event,this,'o1')">
+      <input type="number" maxlength="1" id="o3" oninput="otpMove(this,'o4')" onkeydown="otpBack(event,this,'o2')">
+      <input type="number" maxlength="1" id="o4" oninput="otpMove(this,'o5')" onkeydown="otpBack(event,this,'o3')">
+      <input type="number" maxlength="1" id="o5" oninput="otpMove(this,'o6')" onkeydown="otpBack(event,this,'o4')">
+      <input type="number" maxlength="1" id="o6" oninput="otpMove(this,'')"  onkeydown="otpBack(event,this,'o5')">
+    </div>
+    <div class="otp-timer">Code expires in <span id="otpTimerDisplay">10:00</span></div>
+    <button type="button" class="resend-btn" id="resendBtn" disabled onclick="resendOTP()">Resend OTP</button>
+    <br><br>
+    <button class="btn-auth" onclick="verifyOTPSubmit()" id="verifyBtn">
+      <div class="spinner"></div>
+      <span class="btn-label"><i class="fas fa-check-circle"></i> Verify &amp; Continue</span>
+    </button>
+    <div style="margin-top:1rem"><button onclick="closeOtpModal()" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:.85rem">✕ Cancel</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="auth-toast" id="authToast"></div>
+
+<script src="js/db.js"></script>
+<script src="js/auth.js"></script>
+<script>
+DB.init();
+(async () => {
+  await Auth.init();
+  if (Auth.isLoggedIn()) {
+    const next = new URLSearchParams(window.location.search).get('next');
+    window.location.href = next ? decodeURIComponent(next) : 'index.html';
+  }
+  // Show error if redirected from admin
+  const err = new URLSearchParams(window.location.search).get('error');
+  if (err === 'admin_only') authToast('⚠️ Admin access required. Please sign in as admin.', 'error');
+})();
+
+window.authToast = function(msg, type='info') {
+  const t = document.getElementById('authToast');
+  const icons = { success:'fa-check-circle', error:'fa-times-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle' };
+  t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;
+  t.className = `auth-toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 4500);
+};
+
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab)?.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const isText = inp.type === 'text';
+  inp.type = isText ? 'password' : 'text';
+  btn.querySelector('i').className = isText ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+function updateStrength(val) {
+  const s = Auth.checkPasswordStrength(val);
+  document.getElementById('pwdFill').style.cssText = `width:${s.pct}%;background:${s.color}`;
+  document.getElementById('pwdLabel').textContent = s.label;
+  document.getElementById('pwdLabel').style.color = s.color;
+}
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = on;
+  btn.classList.toggle('loading', on);
+}
+
+let pendingEmail = '', otpActionContext = 'register';
+
+async function handleSignin(e) {
+  e.preventDefault();
+  setLoading('signinBtn', true);
+  const emailOrId = document.getElementById('si-email').value.trim();
+  const password = document.getElementById('si-pwd').value;
+  const res = await Auth.login({ email: emailOrId, password });
+  setLoading('signinBtn', false);
+  if (res.ok) {
+    authToast('Welcome back! Signing you in…', 'success');
+    setTimeout(() => Auth.redirectAfterLogin(), 900);
+  } else if (res.needsVerify) {
+    pendingEmail = res.email || emailOrId;
+    otpActionContext = 'register';
+    const otp = await Auth.sendOTP(pendingEmail, '');
+    openOtpModal(pendingEmail, otp.otp);
+    authToast('Please verify your email first.', 'warning');
+  } else {
+    authToast(res.msg, 'error');
+  }
+}
+
+async function handleOtpLogin(e) {
+  e.preventDefault();
+  setLoading('otpLoginBtn', true);
+  const email = document.getElementById('ot-email').value.trim();
+  const res = await Auth.sendLoginOTP(email);
+  setLoading('otpLoginBtn', false);
+  if (res.ok) {
+    pendingEmail = email;
+    otpActionContext = 'login';
+    openOtpModal(email, res.otp);
+    authToast('OTP sent! Check your email (or use demo code).', 'success');
+  } else {
+    authToast(res.msg, 'error');
+  }
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const name  = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pwd   = document.getElementById('su-pwd').value;
+  const type  = document.getElementById('su-type').value;
+  const reg   = document.getElementById('su-reg').value.trim();
+  const phone = document.getElementById('su-phone').value.trim();
+  const dob   = document.getElementById('su-dob').value;
+  const dept  = document.getElementById('su-dept').value.trim();
+  
+  setLoading('signupBtn', true);
+  const res = await Auth.register({ name, email, password: pwd, userType: type, regNumber: reg, phone, dob, department: dept });
+  setLoading('signupBtn', false);
+  if (res.ok) {
+    pendingEmail = email;
+    otpActionContext = 'register';
+    openOtpModal(email, res.otp);
+    authToast('Account created! Verify your email to continue.', 'success');
+  } else {
+    authToast(res.msg, 'error');
+  }
+}
+
+async function handleForgot(e) {
+  e.preventDefault();
+  const email = document.getElementById('fg-email').value.trim();
+  setLoading('forgotBtn', true);
+  const res = await Auth.sendLoginOTP(email);
+  setLoading('forgotBtn', false);
+  if (res.ok) {
+    pendingEmail = email;
+    otpActionContext = 'reset';
+    openOtpModal(email, res.otp);
+  } else {
+    authToast(res.msg, 'error');
+  }
+}
+
+let otpTimerInterval = null;
+
+function openOtpModal(email, demoOtp) {
+  document.getElementById('otpEmailDisplay').textContent = email;
+  const banner = document.getElementById('demoOtpBanner');
+  if (demoOtp) {
+    banner.style.display = 'block';
+    document.getElementById('demoOtpCode').textContent = demoOtp;
+  } else {
+    banner.style.display = 'none';
+  }
+  document.getElementById('otpModal').classList.add('open');
+  ['o1','o2','o3','o4','o5','o6'].forEach(id => {
+    const el = document.getElementById(id); el.value = ''; el.classList.remove('filled');
+  });
+  document.getElementById('o1').focus();
+  startOtpTimer();
+}
+function closeOtpModal() {
+  document.getElementById('otpModal').classList.remove('open');
+  clearInterval(otpTimerInterval);
+}
+function otpMove(el, nextId) {
+  const val = el.value.toString().slice(-1);
+  el.value = val; el.classList.toggle('filled', !!val);
+  if (val && nextId) document.getElementById(nextId)?.focus();
+}
+function otpBack(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId)?.focus();
+}
+function startOtpTimer() {
+  clearInterval(otpTimerInterval);
+  let secs = 600;
+  const resend = document.getElementById('resendBtn');
+  resend.disabled = true;
+  function tick() {
+    const m = Math.floor(secs/60).toString().padStart(2,'0');
+    const s = (secs%60).toString().padStart(2,'0');
+    document.getElementById('otpTimerDisplay').textContent = `${m}:${s}`;
+    if (secs <= 0) { clearInterval(otpTimerInterval); resend.disabled = false; }
+    secs--;
+  }
+  tick(); otpTimerInterval = setInterval(tick, 1000);
+}
+async function resendOTP() {
+  if (!pendingEmail) return;
+  const res = await Auth.sendLoginOTP(pendingEmail);
+  if (res.otp) document.getElementById('demoOtpCode').textContent = res.otp;
+  document.getElementById('demoOtpBanner').style.display = 'block';
+  authToast('New OTP generated!', 'info');
+  startOtpTimer();
+}
+
+async function verifyOTPSubmit() {
+  const otp = ['o1','o2','o3','o4','o5','o6'].map(id => document.getElementById(id).value).join('');
+  if (otp.length < 6) { authToast('Please enter all 6 digits.', 'error'); return; }
+  setLoading('verifyBtn', true);
+  if (otpActionContext === 'login' || otpActionContext === 'reset') {
+    const res = Auth.loginWithOTP(pendingEmail, otp);
+    if (res.ok) {
+      authToast('✅ Verified! Signing you in...', 'success');
+      closeOtpModal();
+      setTimeout(() => Auth.redirectAfterLogin(), 900);
+    } else { authToast(res.msg, 'error'); }
+  } else {
+    const res = Auth.verifyOTP(pendingEmail, otp);
+    if (res.ok) {
+      Auth.markVerified(pendingEmail);
+      authToast('✅ Email verified! Welcome aboard! 🎉', 'success');
+      closeOtpModal();
+      setTimeout(() => Auth.redirectAfterLogin(), 900);
+    } else { authToast(res.msg, 'error'); }
+  }
+  setLoading('verifyBtn', false);
+}
+</script>
+</body>
+</html>

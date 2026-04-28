@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>My Profile | SCSVMV Events</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>if(!localStorage.getItem('scsvmv_auth_session'))window.location.replace('auth.html');</script>
+  <style>
+    :root{ --prof-blue:#1565C0; --prof-orange:#FF6B2B; }
+    .prof-wrap{max-width:1050px;margin:0 auto;padding:2rem 1.5rem 4rem}
+    /* Hero card */
+    .prof-hero{background:linear-gradient(135deg,#1565C0 0%,#0d47a1 100%);border-radius:20px;padding:2.5rem 2.5rem 4rem;color:#fff;position:relative;overflow:hidden;margin-bottom:-3rem}
+    .prof-hero::after{content:'';position:absolute;bottom:-60px;left:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.06)}
+    .prof-hero-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem}
+    .prof-hero-title{font-size:1rem;font-weight:600;opacity:.8;letter-spacing:2px;text-transform:uppercase;margin-bottom:.3rem}
+    .prof-hero-name{font-size:2rem;font-weight:800;line-height:1.2}
+    .prof-hero-sub{opacity:.75;font-size:.95rem;margin-top:.3rem}
+    .prof-hero-actions{display:flex;gap:.7rem;flex-wrap:wrap}
+    .btn-prof{padding:.6rem 1.2rem;border-radius:10px;font-weight:600;font-size:.85rem;cursor:pointer;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;gap:.4rem;transition:.2s;backdrop-filter:blur(4px)}
+    .btn-prof:hover{background:rgba(255,255,255,.25)}
+    .btn-prof.danger{border-color:rgba(254,202,202,.5);background:rgba(220,38,38,.2)}
+    .btn-prof.danger:hover{background:rgba(220,38,38,.35)}
+    /* Avatar */
+    .prof-avatar-wrap{position:relative;width:110px;height:110px;flex-shrink:0}
+    .prof-avatar{width:110px;height:110px;border-radius:50%;border:4px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:800;color:#fff;overflow:hidden}
+    .prof-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    /* Body cards */
+    .prof-body{display:grid;grid-template-columns:1fr 2fr;gap:1.5rem;align-items:start}
+    @media(max-width:720px){.prof-body{grid-template-columns:1fr}}
+    .prof-card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;padding:1.8rem;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+    .prof-card-title{font-size:1rem;font-weight:700;color:var(--prof-blue);display:flex;align-items:center;gap:.5rem;margin-bottom:1.4rem;padding-bottom:.8rem;border-bottom:2px solid #f3f4f6}
+    .prof-card-title i{color:var(--prof-orange)}
+    .info-row{display:flex;align-items:center;gap:.8rem;padding:.7rem 0;border-bottom:1px solid #f3f4f6}
+    .info-row:last-child{border-bottom:none}
+    .info-icon{width:34px;height:34px;border-radius:8px;background:#f0f9ff;display:flex;align-items:center;justify-content:center;color:#0369a1;font-size:.85rem;flex-shrink:0}
+    .info-content{flex:1;min-width:0}
+    .info-label{font-size:.75rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px;line-height:1}
+    .info-value{font-size:.95rem;color:#111827;font-weight:600;margin-top:.2rem;word-break:break-all}
+    .info-value.empty{color:#9ca3af;font-weight:400;font-style:italic}
+    /* Badges */
+    .role-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .9rem;border-radius:20px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .role-badge.admin{background:#fef2f2;color:#dc2626;border:1.5px solid #fecaca}
+    .role-badge.student{background:#eff6ff;color:#1565C0;border:1.5px solid #bfdbfe}
+    .role-badge.faculty{background:#f0fdf4;color:#166534;border:1.5px solid #bbf7d0}
+    .role-badge.guest{background:#fefce8;color:#854d0e;border:1.5px solid #fde68a}
+    /* Events */
+    .ev-pill{display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center;padding:.9rem 1rem;border-radius:12px;border:1px solid #e5e7eb;margin-bottom:.7rem;transition:.2s}
+    .ev-pill:hover{border-color:#bfdbfe;background:#f8faff}
+    .ev-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .ev-dot.upcoming{background:#FF6B2B}
+    .ev-dot.past{background:#d1d5db}
+    .ev-title{font-size:.93rem;font-weight:700;color:#1f2937}
+    .ev-meta{font-size:.78rem;color:#6b7280}
+    .ev-tag{font-size:.72rem;padding:.25rem .6rem;border-radius:6px;font-weight:600;white-space:nowrap}
+    .ev-tag.upcoming{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+    .ev-tag.past{background:#f9fafb;color:#6b7280;border:1px solid #e5e7eb}
+    /* Modals */
+    .modal-over{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal-over.open{display:flex}
+    .modal-box2{background:#fff;border-radius:20px;padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .modal-hdr{font-size:1.2rem;font-weight:800;color:#1565C0;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+    .modal-hdr i{color:#FF6B2B}
+    .form-group2{margin-bottom:1rem}
+    .form-group2 label{display:block;font-size:.82rem;font-weight:700;color:#374151;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.4px}
+    .form-group2 input,.form-group2 textarea,.form-group2 select{width:100%;padding:.75rem 1rem;border:2px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.93rem;color:#111827;transition:.2s;background:#fafafa;box-sizing:border-box}
+    .form-group2 input:focus,.form-group2 textarea:focus{border-color:#1565C0;outline:none;background:#fff}
+    .form-row2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    @media(max-width:480px){.form-row2{grid-template-columns:1fr}}
+    .btn-save{background:linear-gradient(135deg,#FF6B2B,#e85a1a);color:#fff;border:none;padding:.8rem 1.5rem;border-radius:10px;font-weight:700;font-size:.93rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:.2s}
+    .btn-save:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,107,43,.4)}
+    .btn-cancel{background:#f9fafb;color:#6b7280;border:1.5px solid #e5e7eb;padding:.8rem 1.5rem;border-radius:10px;font-weight:700;font-size:.93rem;cursor:pointer;transition:.2s}
+    .btn-cancel:hover{background:#f3f4f6}
+  </style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html">Participants</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="notifications.html">Reminders</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div class="prof-wrap">
+  <!-- Hero -->
+  <div class="prof-hero" id="profHero">
+    <div class="prof-hero-top">
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+        <div class="prof-avatar-wrap">
+          <div class="prof-avatar" id="profAvatar">?</div>
+        </div>
+        <div>
+          <div class="prof-hero-title">My Profile</div>
+          <div class="prof-hero-name" id="profName">Loading...</div>
+          <div class="prof-hero-sub" id="profEmail"></div>
+          <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap">
+            <span id="profRoleBadge" class="role-badge student"></span>
+            <span id="profTypeBadge" class="role-badge faculty" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff"></span>
+          </div>
+        </div>
+      </div>
+      <div class="prof-hero-actions">
+        <button class="btn-prof" onclick="openEditModal()"><i class="fas fa-edit"></i> Edit Profile</button>
+        <button class="btn-prof" onclick="openPwdModal()"><i class="fas fa-key"></i> Change Password</button>
+        <button class="btn-prof danger" onclick="Auth.logout();window.location.href='auth.html'"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="prof-body" style="margin-top:4rem">
+    <!-- Left: Details Card -->
+    <div>
+      <div class="prof-card">
+        <div class="prof-card-title"><i class="fas fa-id-card"></i> Personal Information</div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-user"></i></div><div class="info-content"><div class="info-label">Full Name</div><div class="info-value" id="piName">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-envelope"></i></div><div class="info-content"><div class="info-label">Email</div><div class="info-value" id="piEmail">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-id-badge"></i></div><div class="info-content"><div class="info-label">Reg. / Employee ID</div><div class="info-value" id="piReg">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-phone"></i></div><div class="info-content"><div class="info-label">Phone</div><div class="info-value" id="piPhone">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-birthday-cake"></i></div><div class="info-content"><div class="info-label">Date of Birth / Age</div><div class="info-value" id="piDob">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-building"></i></div><div class="info-content"><div class="info-label">Department</div><div class="info-value" id="piDept">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-quote-left"></i></div><div class="info-content"><div class="info-label">Bio</div><div class="info-value" id="piBio">—</div></div></div>
+        <div class="info-row"><div class="info-icon"><i class="fas fa-calendar"></i></div><div class="info-content"><div class="info-label">Member Since</div><div class="info-value" id="piJoined">—</div></div></div>
+      </div>
+    </div>
+
+    <!-- Right: Registered Events -->
+    <div>
+      <div class="prof-card">
+        <div class="prof-card-title"><i class="fas fa-calendar-check"></i> My Registered Events</div>
+        <div id="myEventsList"><div style="text-align:center;padding:2rem;color:#9ca3af"><i class="fas fa-spinner fa-spin" style="font-size:2rem"></i></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem;margin-top:2rem">&copy; 2026 SCSVMV University</footer>
+<div class="toast"></div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-over" id="editModal">
+  <div class="modal-box2">
+    <div class="modal-hdr"><i class="fas fa-user-edit"></i> Edit Profile</div>
+    <div class="form-row2">
+      <div class="form-group2"><label>Full Name</label><input type="text" id="eeName" placeholder="Your full name"></div>
+      <div class="form-group2"><label>Phone</label><input type="tel" id="eePhone" placeholder="+91 9876543210"></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-group2"><label>Date of Birth</label><input type="date" id="eeDob"></div>
+      <div class="form-group2"><label>Department</label><input type="text" id="eeDept" placeholder="e.g. Computer Science"></div>
+    </div>
+    <div class="form-group2"><label>Short Bio</label><textarea id="eeBio" rows="3" placeholder="Tell us about yourself..."></textarea></div>
+    <div style="display:flex;gap:.8rem;margin-top:1.5rem;justify-content:flex-end">
+      <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEditProfile()"><i class="fas fa-save"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal-over" id="pwdModal">
+  <div class="modal-box2">
+    <div class="modal-hdr"><i class="fas fa-key"></i> Change Password</div>
+    <div class="form-group2">
+      <label>Current Password</label>
+      <input type="password" id="pwOld" placeholder="Enter current password">
+    </div>
+    <div class="form-group2">
+      <label>New Password</label>
+      <input type="password" id="pwNew" placeholder="Min 6 characters">
+    </div>
+    <div class="form-group2">
+      <label>Confirm New Password</label>
+      <input type="password" id="pwConfirm" placeholder="Repeat new password">
+    </div>
+    <div class="demo-hint" style="margin:.5rem 0 1rem;font-size:.82rem;background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:.7rem;border-radius:8px">
+      <strong>Tip:</strong> Your default password is your DOB in <strong>DDMMYYYY</strong> format.
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end">
+      <button class="btn-cancel" onclick="closePwdModal()">Cancel</button>
+      <button class="btn-save" onclick="savePassword()"><i class="fas fa-lock"></i> Update Password</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/db.js"></script><script src="js/auth.js"></script><script src="js/script.js"></script>
+<script>
+DB.init();
+document.addEventListener('DOMContentLoaded', async () => {
+  await Auth.init();
+  if (!Auth.requireAuth()) return;
+  if (typeof Auth !== 'undefined') {
+    const navMenu = document.getElementById('navMenu');
+    if (navMenu) Auth.injectNavUser(navMenu, false);
+  }
+  loadProfile();
+});
+
+function calcAge(dobStr) {
+  if (!dobStr) return null;
+  const dob = new Date(dobStr), now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  if (now < new Date(now.getFullYear(), dob.getMonth(), dob.getDate())) age--;
+  return age;
+}
+
+function loadProfile() {
+  const session = Auth.getSession();
+  if (!session) return;
+  const users = JSON.parse(localStorage.getItem('scsvmv_auth_users') || '[]');
+  const u = users.find(x => x.email === session.email) || session;
+
+  // Hero
+  const initials = (u.name || '?').split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+  const avEl = document.getElementById('profAvatar');
+  avEl.innerHTML = u.avatar ? `<img src="${u.avatar}" alt="${initials}">` : initials;
+
+  document.getElementById('profName').textContent = u.name || 'Unknown User';
+  document.getElementById('profEmail').textContent = u.email;
+
+  // Role badge
+  const roleBadge = document.getElementById('profRoleBadge');
+  roleBadge.textContent = (u.role || 'user').toUpperCase();
+  roleBadge.className = `role-badge ${u.role === 'admin' ? 'admin' : (u.user_type || 'student')}`;
+
+  const typeBadge = document.getElementById('profTypeBadge');
+  const typeMap = {student:'Student', faculty:'Faculty / Staff', guest:'Guest', admin:'Administrator'};
+  typeBadge.textContent = typeMap[u.user_type] || 'User';
+
+  // Info rows
+  const setInfo = (id, val) => {
+    const el = document.getElementById(id);
+    if (val) { el.textContent = val; el.classList.remove('empty'); }
+    else { el.textContent = 'Not provided'; el.classList.add('empty'); }
+  };
+
+  setInfo('piName', u.name);
+  setInfo('piEmail', u.email);
+  setInfo('piReg', u.reg_number);
+  setInfo('piPhone', u.phone);
+  
+  // DOB + Age
+  if (u.dob) {
+    const age = calcAge(u.dob);
+    const dobFmt = fmtDate(u.dob);
+    setInfo('piDob', age !== null ? `${dobFmt} (${age} years old)` : dobFmt);
+  } else setInfo('piDob', null);
+
+  setInfo('piDept', u.department);
+  setInfo('piBio', u.bio);
+  setInfo('piJoined', fmtDate((u.created_date || '').slice(0,10)));
+
+  // Registered Events
+  const myParts = DB.getAll('participants').filter(p => p.email && p.email.toLowerCase() === u.email.toLowerCase());
+  const listEl = document.getElementById('myEventsList');
+  if (!myParts.length) {
+    listEl.innerHTML = `<div style="text-align:center;padding:2rem;color:#9ca3af">
+      <i class="fas fa-ticket-alt" style="font-size:2.5rem;margin-bottom:.8rem;display:block"></i>
+      <p style="font-weight:600;color:#6b7280">No events registered yet</p>
+      <a href="events.html" class="btn btn-primary" style="margin-top:1rem;display:inline-flex">Browse Events</a>
+    </div>`;
+    return;
+  }
+  const evMap = {};
+  DB.getAll('events').forEach(e => evMap[e.id] = e);
+
+  listEl.innerHTML = myParts.map(p => {
+    const ev = evMap[p.event_id];
+    if (!ev) return '';
+    const past = ev.status === 'completed' || new Date(ev.date) < new Date();
+    return `<div class="ev-pill">
+      <div class="ev-dot ${past?'past':'upcoming'}"></div>
+      <div>
+        <div class="ev-title">${ev.title}</div>
+        <div class="ev-meta"><i class="fas fa-calendar" style="color:#FF6B2B"></i> ${fmtDate(ev.date)} &nbsp; <i class="fas fa-map-marker-alt" style="color:#FF6B2B"></i> ${ev.venue}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">
+        <span class="ev-tag ${past?'past':'upcoming'}">${past?'Past':'Upcoming'}</span>
+        <a href="event-details.html?id=${ev.id}" style="font-size:.75rem;color:#1565C0;font-weight:600">View →</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEditModal() {
+  const users = JSON.parse(localStorage.getItem('scsvmv_auth_users') || '[]');
+  const session = Auth.getSession();
+  const u = users.find(x => x.email === session.email) || {};
+  document.getElementById('eeName').value = u.name || '';
+  document.getElementById('eePhone').value = u.phone || '';
+  document.getElementById('eeDob').value = u.dob || '';
+  document.getElementById('eeDept').value = u.department || '';
+  document.getElementById('eeBio').value = u.bio || '';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
+
+function saveEditProfile() {
+  const session = Auth.getSession();
+  const name = document.getElementById('eeName').value.trim();
+  if (!name) { showToast('Name cannot be empty','error'); return; }
+  const res = Auth.updateProfile(session.email, {
+    name, phone: document.getElementById('eePhone').value.trim(),
+    dob: document.getElementById('eeDob').value,
+    department: document.getElementById('eeDept').value.trim(),
+    bio: document.getElementById('eeBio').value.trim(),
+  });
+  if (res.ok) { showToast('Profile updated!','success'); closeEditModal(); loadProfile(); }
+  else showToast('Error updating profile','error');
+}
+
+function openPwdModal() {
+  document.getElementById('pwOld').value='';
+  document.getElementById('pwNew').value='';
+  document.getElementById('pwConfirm').value='';
+  document.getElementById('pwdModal').classList.add('open');
+}
+function closePwdModal() { document.getElementById('pwdModal').classList.remove('open'); }
+
+async function savePassword() {
+  const session = Auth.getSession();
+  const old = document.getElementById('pwOld').value;
+  const nw = document.getElementById('pwNew').value;
+  const cf = document.getElementById('pwConfirm').value;
+  if (!nw || nw.length < 6) { showToast('New password must be at least 6 characters','error'); return; }
+  if (nw !== cf) { showToast('Passwords do not match','error'); return; }
+  const res = await Auth.changePassword(session.email, old, nw);
+  if (res.ok) { showToast('Password changed successfully!','success'); closePwdModal(); }
+  else showToast(res.msg,'error');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Events | Reminders & Notifications</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html">Participants</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="notifications.html" class="active">Reminders</a></li>
+    <li><a href="create-event.html" class="nav-btn"><i class="fas fa-plus"></i> Create Event</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div class="page-banner" style="background:linear-gradient(135deg,#16a34a,#15803d)">
+  <h1><i class="fas fa-bell"></i> Reminders & Notifications</h1>
+  <p>Stay updated via Email, WhatsApp, Phone and more</p>
+</div>
+
+<div class="container" style="max-width:900px">
+
+  <!-- Contact channels -->
+  <h2 class="section-title">Stay Connected</h2>
+  <p class="section-sub">Multiple ways to get event updates</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;margin-bottom:4rem">
+    <div class="notif-card">
+      <div class="notif-icon orange"><i class="fas fa-envelope"></i></div>
+      <div style="flex:1">
+        <h4 style="color:var(--blue);font-size:1.1rem;margin-bottom:.2rem">Email Alerts</h4>
+        <p style="font-size:.9rem;color:var(--text-light);margin-bottom:.8rem">Get direct event notifications.</p>
+        <a href="mailto:events@kanchiuniv.ac.in" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">events@kanchiuniv.ac.in</a>
+      </div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-icon green"><i class="fab fa-whatsapp"></i></div>
+      <div style="flex:1">
+        <h4 style="color:var(--blue);font-size:1.1rem;margin-bottom:.2rem">WhatsApp</h4>
+        <p style="font-size:.9rem;color:var(--text-light);margin-bottom:.8rem">Join our community group.</p>
+        <a href="https://chat.whatsapp.com/invite/scsvmv-events" target="_blank" class="btn btn-success btn-sm" style="width:100%;justify-content:center">Join Community</a>
+      </div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-icon blue"><i class="fas fa-phone"></i></div>
+      <div style="flex:1">
+        <h4 style="color:var(--blue);font-size:1.1rem;margin-bottom:.2rem">Phone Inquiry</h4>
+        <p style="font-size:.9rem;color:var(--text-light);margin-bottom:.8rem">Call the events office.</p>
+        <a href="tel:+914427264301" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">044-2726 4301</a>
+      </div>
+    </div>
+    <div class="notif-card">
+      <div class="notif-icon purple"><i class="fab fa-telegram"></i></div>
+      <div style="flex:1">
+        <h4 style="color:var(--blue);font-size:1.1rem;margin-bottom:.2rem">Telegram</h4>
+        <p style="font-size:.9rem;color:var(--text-light);margin-bottom:.8rem">Follow our channel.</p>
+        <a href="https://t.me/scsvmv_events" target="_blank" class="btn btn-outline btn-sm" style="width:100%;justify-content:center">@scsvmv_events</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming events with reminders -->
+  <h2 class="section-title">Upcoming Reminders</h2>
+  <p class="section-sub">Events happening soon that you might not want to miss</p>
+  <div id="upcomingReminders"></div>
+
+  <!-- Newsletter subscribe -->
+  <div class="glass-card" style="background:linear-gradient(135deg,rgba(21,101,192,.9),rgba(13,71,161,.95));margin-top:4rem;text-align:center;color:#fff;border:none">
+    <h2 style="font-family:'Montserrat',sans-serif;font-size:2rem;margin-bottom:.5rem">Subscribe for Updates</h2>
+    <p style="opacity:.85;margin-bottom:2rem;font-size:1.05rem">Get a weekly digest of upcoming events directly in your inbox.</p>
+    <div style="display:flex;gap:.8rem;max-width:500px;margin:0 auto;flex-wrap:wrap">
+      <input type="email" id="subEmail" placeholder="Enter your email address" style="flex:1;padding:.85rem 1.2rem;border-radius:12px;border:none;font-family:'Poppins',sans-serif;font-size:1rem;min-width:250px">
+      <button class="btn btn-primary" onclick="subscribe()" style="padding:.85rem 1.5rem;font-size:1rem;border-radius:12px">Subscribe <i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- Social links -->
+  <div style="text-align:center;margin-top:4rem">
+    <h3 style="color:var(--blue);margin-bottom:1.5rem;font-weight:700">Follow Us on Social Media</h3>
+    <div style="display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap">
+      <a href="#" class="btn btn-sm" style="background:#1877f2;color:#fff;padding:.6rem 1.2rem"><i class="fab fa-facebook-f"></i> Facebook</a>
+      <a href="#" class="btn btn-sm" style="background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);color:#fff;padding:.6rem 1.2rem;border:none"><i class="fab fa-instagram"></i> Instagram</a>
+      <a href="#" class="btn btn-sm" style="background:#1da1f2;color:#fff;padding:.6rem 1.2rem"><i class="fab fa-twitter"></i> Twitter</a>
+      <a href="https://www.youtube.com" target="_blank" class="btn btn-sm" style="background:#ff0000;color:#fff;padding:.6rem 1.2rem"><i class="fab fa-youtube"></i> YouTube</a>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem;margin-top:3rem">
+  &copy; 2026 SCSVMV University | <a href="mailto:events@kanchiuniv.ac.in" style="color:var(--orange)">Contact Us</a>
+</footer>
+<div class="toast"></div>
+<script src="js/db.js"></script><script src="js/auth.js"></script><script src="js/script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const upcoming=DB.getAll('events').filter(e=>e.status==='upcoming'&&e.approved==='true').slice(0,5);
+  const container=document.getElementById('upcomingReminders');
+  
+  if(!upcoming.length){
+    container.innerHTML='<div class="empty-state"><i class="fas fa-calendar-check"></i><h3>No upcoming events</h3></div>';
+    return;
+  }
+  
+  container.innerHTML=upcoming.map(ev=>{
+    const daysLeft=Math.ceil((new Date(ev.date)-new Date())/(1000*60*60*24));
+    const urgent=daysLeft<=7;
+    return `<div class="notif-card" style="position:relative;overflow:hidden">
+      ${urgent?'<div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#dc2626"></div>':'<div style="position:absolute;top:0;left:0;width:4px;height:100%;background:var(--orange)"></div>'}
+      <div class="notif-icon ${urgent?'red':'orange'}">
+        <i class="fas fa-calendar-day"></i>
+      </div>
+      <div style="flex:1">
+        <h4 style="color:var(--blue);margin-bottom:.4rem;font-size:1.15rem">${ev.title}</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:1.2rem;font-size:.9rem;color:var(--text-light);margin-bottom:1rem">
+          <span style="display:flex;align-items:center;gap:.4rem"><i class="fas fa-calendar" style="color:var(--orange)"></i> ${fmtDate(ev.date)}</span>
+          <span style="display:flex;align-items:center;gap:.4rem"><i class="fas fa-clock" style="color:var(--orange)"></i> ${fmtTime(ev.time)}</span>
+          <span style="display:flex;align-items:center;gap:.4rem"><i class="fas fa-map-marker-alt" style="color:var(--orange)"></i> ${ev.venue}</span>
+        </div>
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center">
+          ${urgent?`<span class="badge badge-red" style="padding:.4rem .8rem;font-size:.85rem"><i class="fas fa-fire"></i> ${daysLeft} day${daysLeft!==1?'s':''} left!</span>`:`<span class="badge badge-orange" style="padding:.4rem .8rem;font-size:.85rem">${daysLeft} days away</span>`}
+          ${ev.whatsapp_link?`<a href="${ev.whatsapp_link}" target="_blank" class="btn btn-sm" style="background:#25d366;color:#fff;border-radius:8px"><i class="fab fa-whatsapp"></i> Join Group</a>`:''}
+          <a href="mailto:${ev.contact_email}?subject=Query: ${encodeURIComponent(ev.title)}" class="btn btn-outline btn-sm" style="border-radius:8px"><i class="fas fa-envelope"></i> Contact</a>
+          <a href="event-details.html?id=${ev.id}" class="btn btn-primary btn-sm" style="border-radius:8px;margin-left:auto">View Details <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+});
+
+function subscribe(){
+  const email=document.getElementById('subEmail').value.trim();
+  if(!email||!email.includes('@')){showToast('Enter a valid email','error');return;}
+  showToast(`Subscribed! Updates will be sent to ${email}`,'success');
+  document.getElementById('subEmail').value='';
+}
+</script>
+</body></html>

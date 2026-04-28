@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Admin | User Management</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .user-table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+    table{width:100%;border-collapse:collapse;font-size:.88rem}
+    thead{background:linear-gradient(135deg,#1565C0,#0d47a1)}
+    thead th{padding:1rem .8rem;color:#fff;font-weight:700;text-align:left;white-space:nowrap}
+    tbody tr{border-bottom:1px solid #f3f4f6;transition:.15s}
+    tbody tr:hover{background:#f8faff}
+    tbody td{padding:.85rem .8rem;vertical-align:top;color:#374151}
+    .u-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#FF6B2B);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;flex-shrink:0}
+    .u-name{font-weight:700;color:#111827}
+    .u-email{font-size:.8rem;color:#6b7280}
+    .pwd-cell{font-family:monospace;background:#fef9c3;border:1px solid #fde68a;color:#92400e;padding:.3rem .6rem;border-radius:6px;font-size:.82rem;white-space:nowrap}
+    .filter-bar{display:flex;gap:.8rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+    .filter-bar input{flex:1;min-width:200px;padding:.7rem 1rem;border:2px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.93rem}
+    .filter-bar select{padding:.7rem 1rem;border:2px solid #e5e7eb;border-radius:10px;font-family:inherit;background:#fff}
+    .stat-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .7rem;border-radius:8px;font-size:.78rem;font-weight:700}
+    .sp-admin{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+    .sp-student{background:#eff6ff;color:#1565C0;border:1px solid #bfdbfe}
+    .sp-faculty{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+    .sp-guest{background:#fefce8;color:#854d0e;border:1px solid #fde68a}
+    .sp-user{background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe}
+    .verified-tag{display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:600}
+    .verified-tag.yes{color:#16a34a}.verified-tag.no{color:#dc2626}
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><img src="../assets/images/logo.png" alt="Logo"><h2>SCSVMV <span>Admin</span></h2></div>
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="manage-events.html"><i class="fas fa-calendar-alt"></i> Manage Events</a></li>
+      <li><a href="add-event.html"><i class="fas fa-plus-circle"></i> Add Event</a></li>
+      <li><a href="users.html" class="active"><i class="fas fa-users-cog"></i> Users Database</a></li>
+      <li><a href="../participants.html"><i class="fas fa-users"></i> Participants</a></li>
+      <li><a href="../feedback.html"><i class="fas fa-star"></i> Feedback</a></li>
+      <li style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.1);padding-top:1rem"><a href="../index.html"><i class="fas fa-home"></i> Back to Site</a></li>
+      <li><a href="#" onclick="Auth.logout();window.location.href='../auth.html'" style="color:#ff8a8a"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1><i class="fas fa-users-cog"></i> Users Database</h1>
+      <div style="display:flex;gap:.8rem">
+        <button class="btn btn-outline btn-sm" onclick="exportUsers()"><i class="fas fa-download"></i> Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div id="uStats" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem"></div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search by name, email, reg no..." oninput="filterUsers()">
+      <select id="typeFilter" onchange="filterUsers()">
+        <option value="">All Types</option>
+        <option value="admin">Admin</option>
+        <option value="student">Student</option>
+        <option value="faculty">Faculty / Staff</option>
+        <option value="guest">Guest</option>
+      </select>
+      <select id="verifiedFilter" onchange="filterUsers()">
+        <option value="">All Status</option>
+        <option value="true">Verified</option>
+        <option value="false">Unverified</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="user-table-wrap">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Reg / ID</th>
+            <th>Phone</th>
+            <th>DOB</th>
+            <th>Department</th>
+            <th>Type</th>
+            <th>Password (SHA-256)</th>
+            <th>Default Pwd Hint</th>
+            <th>Verified</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
+    <div id="noUsersMsg" style="display:none;text-align:center;padding:3rem;color:#6b7280">
+      <i class="fas fa-search" style="font-size:2rem;margin-bottom:1rem;display:block"></i>
+      No users match your search.
+    </div>
+  </main>
+</div>
+
+<div class="toast"></div>
+<script src="../js/db.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/script.js"></script>
+<script>
+DB.init();
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof Auth !== 'undefined') {
+    Auth.init().then(() => {
+      if (!Auth.requireAdmin()) return;
+      loadUsers();
+    });
+  }
+});
+
+let allUsers = [];
+
+function loadUsers() {
+  allUsers = Auth.getAllUsers();
+
+  // Stats
+  const total = allUsers.length;
+  const admins = allUsers.filter(u => u.role === 'admin').length;
+  const students = allUsers.filter(u => u.user_type === 'student').length;
+  const faculty = allUsers.filter(u => u.user_type === 'faculty').length;
+  const verified = allUsers.filter(u => u.verified).length;
+
+  document.getElementById('uStats').innerHTML = `
+    <div class="admin-stat-card" style="flex:1;min-width:130px"><div class="admin-stat-icon"><i class="fas fa-users"></i></div><div class="admin-stat-info"><div class="num">${total}</div><div class="lbl">Total Users</div></div></div>
+    <div class="admin-stat-card blue" style="flex:1;min-width:130px"><div class="admin-stat-icon"><i class="fas fa-user-graduate"></i></div><div class="admin-stat-info"><div class="num">${students}</div><div class="lbl">Students</div></div></div>
+    <div class="admin-stat-card green" style="flex:1;min-width:130px"><div class="admin-stat-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="admin-stat-info"><div class="num">${faculty}</div><div class="lbl">Faculty</div></div></div>
+    <div class="admin-stat-card red" style="flex:1;min-width:130px"><div class="admin-stat-icon"><i class="fas fa-shield-alt"></i></div><div class="admin-stat-info"><div class="num">${admins}</div><div class="lbl">Admins</div></div></div>
+    <div class="admin-stat-card" style="flex:1;min-width:130px"><div class="admin-stat-icon"><i class="fas fa-check-circle"></i></div><div class="admin-stat-info"><div class="num">${verified}</div><div class="lbl">Verified</div></div></div>
+  `;
+
+  renderTable(allUsers);
+}
+
+function filterUsers() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const type = document.getElementById('typeFilter').value;
+  const vf = document.getElementById('verifiedFilter').value;
+
+  const filtered = allUsers.filter(u => {
+    const matchQ = !q || [u.name, u.email, u.reg_number, u.phone, u.department].some(v => (v||'').toLowerCase().includes(q));
+    const matchType = !type || u.user_type === type || u.role === type;
+    const matchV = !vf || String(u.verified) === vf;
+    return matchQ && matchType && matchV;
+  });
+  renderTable(filtered);
+}
+
+function defaultPwdHint(u) {
+  if (u.dob) {
+    const [y, m, d] = u.dob.split('-');
+    return `${d}${m}${y}`;
+  }
+  return '—';
+}
+
+function renderTable(users) {
+  const tbody = document.getElementById('usersBody');
+  const noMsg = document.getElementById('noUsersMsg');
+  if (!users.length) { tbody.innerHTML = ''; noMsg.style.display='block'; return; }
+  noMsg.style.display = 'none';
+  
+  const typeClass = {admin:'sp-admin', student:'sp-student', faculty:'sp-faculty', guest:'sp-guest'};
+
+  tbody.innerHTML = users.map((u, i) => {
+    const initials = (u.name||'?').split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+    const uType = u.user_type || u.role || 'user';
+    const pwdShort = u.password_hash ? u.password_hash.slice(0,16)+'…' : '—';
+    return `
+    <tr>
+      <td style="color:#9ca3af;font-size:.8rem">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.7rem">
+          ${u.avatar ? `<img src="${u.avatar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover">` : `<div class="u-avatar">${initials}</div>`}
+          <div><div class="u-name">${u.name||'—'}</div><div class="u-email">${u.email}</div></div>
+        </div>
+      </td>
+      <td><code style="font-size:.82rem;color:#1565C0">${u.reg_number||'—'}</code></td>
+      <td>${u.phone||'—'}</td>
+      <td>${u.dob ? fmtDate(u.dob) : '—'}</td>
+      <td>${u.department||'—'}</td>
+      <td><span class="stat-pill ${typeClass[uType]||'sp-user'}">${uType}</span></td>
+      <td title="${u.password_hash||''}"><span class="pwd-cell">${pwdShort}</span></td>
+      <td><code style="font-size:.85rem;background:#f3f4f6;padding:.2rem .5rem;border-radius:5px">${defaultPwdHint(u)}</code></td>
+      <td><span class="verified-tag ${u.verified?'yes':'no'}"><i class="fas fa-${u.verified?'check':'times'}-circle"></i>${u.verified?'Yes':'No'}</span></td>
+      <td style="font-size:.8rem;color:#6b7280">${fmtDate((u.created_date||'').slice(0,10))}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportUsers() {
+  const headers = ['Name','Email','Reg No.','Phone','DOB','Department','Type','Verified','Joined'];
+  const rows = allUsers.map(u => [
+    u.name, u.email, u.reg_number||'', u.phone||'', u.dob||'',
+    u.department||'', u.user_type||'', u.verified, (u.created_date||'').slice(0,10)
+  ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'scsvmv_users.csv'; a.click();
+  showToast('Users CSV downloaded!', 'success');
+}
+</script>
+</body>
+</html>

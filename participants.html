@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SCSVMV Events | Participants</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo-area"><img src="assets/images/logo.png" alt="SCSVMV Logo"><h1>SCSVMV <span>Events</span></h1></a>
+  <nav><ul id="navMenu">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="events.html">Upcoming Events</a></li>
+    <li><a href="past-events.html">Past Events</a></li>
+    <li><a href="participants.html" class="active">Participants</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="notifications.html">Reminders</a></li>
+    <li><a href="create-event.html" class="nav-btn"><i class="fas fa-plus"></i> Create Event</a></li>
+  </ul></nav>
+  <button class="ham" onclick="document.getElementById('navMenu').classList.toggle('open')"><span></span><span></span><span></span></button>
+</header>
+
+<div class="page-banner" style="background:linear-gradient(135deg,#1565C0,#0d47a1)">
+  <h1><i class="fas fa-users"></i> Participant Directory</h1>
+  <p>View and search all registered participants across events</p>
+</div>
+
+<div class="container">
+  <div class="search-filter-bar">
+    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name, email or ID…"></div>
+    <div class="filter-chips" id="filterChips">
+      <span class="chip active" data-type="All">All</span>
+      <span class="chip" data-type="student">Students</span>
+      <span class="chip" data-type="faculty">Faculty</span>
+      <span class="chip" data-type="other">Guests</span>
+    </div>
+    <select id="eventFilter" style="padding:.6rem 1rem;border:2px solid #e5e7eb;border-radius:10px;font-family:Poppins,sans-serif">
+      <option value="">All Events</option>
+    </select>
+    <button class="btn btn-outline btn-sm" onclick="exportTable('participants')"><i class="fas fa-download"></i> Export CSV</button>
+  </div>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Name</th><th>Type</th><th>ID / Reg No.</th>
+          <th>Department</th><th>Event</th><th>Date</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="partsTbody"></tbody>
+    </table>
+  </div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <i class="fas fa-user-slash"></i><h3>No participants found</h3>
+  </div>
+</div>
+
+<footer style="text-align:center;background:#0d47a1;color:rgba(255,255,255,.7);padding:1.5rem;margin-top:3rem">
+  &copy; 2026 SCSVMV University
+</footer>
+<div class="toast"></div>
+<script src="js/db.js"></script><script src="js/auth.js"></script><script src="js/script.js"></script>
+<script>
+let allParts=[], allEvents={}, activeType='All', activeEvent='';
+
+document.addEventListener('DOMContentLoaded',()=>{
+  DB.getAll('events').forEach(e=>allEvents[e.id]=e.title);
+  allParts=DB.getAll('participants');
+
+  // event filter dropdown
+  const evSel=document.getElementById('eventFilter');
+  Object.entries(allEvents).forEach(([id,title])=>{
+    const o=document.createElement('option'); o.value=id; o.textContent=title.slice(0,40); evSel.appendChild(o);
+  });
+
+  // Pre-select event from URL
+  const urlEvent=new URLSearchParams(location.search).get('event');
+  if(urlEvent){evSel.value=urlEvent; activeEvent=urlEvent;}
+
+  render();
+
+  document.getElementById('searchInput').addEventListener('input',render);
+  document.getElementById('filterChips').addEventListener('click',e=>{
+    if(!e.target.classList.contains('chip'))return;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active'); activeType=e.target.dataset.type; render();
+  });
+  evSel.addEventListener('change',()=>{activeEvent=evSel.value;render();});
+});
+
+function render(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let list=allParts.filter(p=>{
+    const matchType=activeType==='All'||p.user_type===activeType;
+    const matchEvent=!activeEvent||p.event_id===activeEvent;
+    const matchQ=!q||p.name.toLowerCase().includes(q)||p.email.toLowerCase().includes(q)||p.user_id.toLowerCase().includes(q);
+    return matchType&&matchEvent&&matchQ;
+  });
+
+  // stats
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card"><div class="num">${list.length}</div><div class="lbl">Showing</div></div>
+    <div class="stat-card"><div class="num">${list.filter(p=>p.user_type==='student').length}</div><div class="lbl">Students</div></div>
+    <div class="stat-card blue"><div class="num">${list.filter(p=>p.user_type==='faculty').length}</div><div class="lbl">Faculty</div></div>
+    <div class="stat-card"><div class="num">${list.filter(p=>p.user_type==='other').length}</div><div class="lbl">Guests</div></div>`;
+
+  const tbody=document.getElementById('partsTbody');
+  const empty=document.getElementById('emptyState');
+  if(!list.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=list.map((p,i)=>`<tr>
+    <td>${i+1}</td>
+    <td><strong>${p.name}</strong><br><span style="font-size:.8rem;color:#6b7280">${p.email}</span></td>
+    <td><span class="badge badge-${p.user_type==='student'?'orange':p.user_type==='faculty'?'blue':'green'}">${p.user_type}</span></td>
+    <td style="font-size:.85rem">${p.user_id}</td>
+    <td>${p.department||'—'}</td>
+    <td style="font-size:.85rem">${(allEvents[p.event_id]||'Unknown').slice(0,35)}…</td>
+    <td style="font-size:.82rem">${fmtDate(p.registration_date)}</td>
+    <td><span class="badge badge-${p.status==='confirmed'?'green':'yellow'}">${p.status}</span></td>
+  </tr>`).join('');
+}
+</script>
+</body></html>
